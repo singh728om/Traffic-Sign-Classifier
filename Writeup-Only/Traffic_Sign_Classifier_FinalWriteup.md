@@ -6,6 +6,8 @@
 ## Project: Build a Traffic Sign Recognition Classifier
 
 ### Note- I am training and running code on CUDA powered by NVIDIA GEFORCE 940MX instead of AWS. The model takes only 20% of the entire Graphic Card Load.
+
+---
 ## Step 0: Load The Data
 
 
@@ -838,6 +840,38 @@ with tf.Session() as sess:
            [31, 18, 21]]))
     
 
+
+```python
+### Visualize your network's feature maps here.
+### Feel free to use as many code cells as needed.
+
+# image_input: the test image being fed into the network to produce the feature maps
+# tf_activation: should be a tf variable name used during your training procedure that represents the calculated state of a specific weight layer
+# activation_min/max: can be used to view the activation contrast in more detail, by default matplot sets min and max to the actual min and max values of the output
+# plt_num: used to plot out multiple different weight feature map sets on the same block, just extend the plt number for each new feature map entry
+
+def outputFeatureMap(image_input, tf_activation, activation_min=-1, activation_max=-1 ,plt_num=1):
+    # Here make sure to preprocess your image_input in a way your network expects
+    # with size, normalization, ect if needed
+    # image_input =
+    # Note: x should be the same name as your network's tensorflow data placeholder variable
+    # If you get an error tf_activation is not defined it may be having trouble accessing the variable from inside a function
+    activation = tf_activation.eval(session=sess,feed_dict={x : image_input})
+    featuremaps = activation.shape[3]
+    plt.figure(plt_num, figsize=(15,15))
+    for featuremap in range(featuremaps):
+        plt.subplot(6,8, featuremap+1) # sets the number of feature maps to show on each row and column
+        plt.title('FeatureMap ' + str(featuremap)) # displays the feature map number
+        if activation_min != -1 & activation_max != -1:
+            plt.imshow(activation[0,:,:, featuremap], interpolation="nearest", vmin =activation_min, vmax=activation_max, cmap="gray")
+        elif activation_max != -1:
+            plt.imshow(activation[0,:,:, featuremap], interpolation="nearest", vmax=activation_max, cmap="gray")
+        elif activation_min !=-1:
+            plt.imshow(activation[0,:,:, featuremap], interpolation="nearest", vmin=activation_min, cmap="gray")
+        else:
+            plt.imshow(activation[0,:,:, featuremap], interpolation="nearest", cmap="gray")
+```
+
 | Input Image Label and Class | First Guess Label and Class | Second Guess Label and Class | Third Guess Label and Class              |
 |-----------------------------|-----------------------------|------------------------------|------------------------------------------|
 | 35,Ahead only               | 35,Ahead only(100%)               | 3,Speed limit,(60km/h)(0%)       | 34,Turn left ahead(0%)                       |
@@ -845,7 +879,6 @@ with tf.Session() as sess:
 | 17,No entry                 | 17,No entry(100%)                 | 14,Stop(0%)                      | 36,Go straight or right(0%)                  |
 | 27,Pedestrians              | 27,Pedestrians(99%)              | 18,General caution(.0023% ~ 0%)           | 11,Right-of-way  at the next intersection (0.000031% ~ 0%) |
 | 31,Wild animals crossing (100%)   | 31,Wild animals crossing (0%)   | 18,General caution (0%)          | 21,Double curve   (0%)                       |
-
 
 
 ```python
